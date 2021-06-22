@@ -20,10 +20,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 import java.time.LocalDateTime;
 
 import snippets.ANSIColor;
@@ -40,8 +42,7 @@ import snippets.CalendarImage;
 public class CalendarHandler extends Handler {
 	private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
+	private static String TOKENS_DIRECTORY_PATH = "tokens";
 	/**
 	 * Global instance of the scopes required by this quickstart. If modifying these
 	 * scopes, delete your previously saved tokens/ folder.
@@ -54,9 +55,9 @@ public class CalendarHandler extends Handler {
 	/**
 	 * Creates an authorized Credential object.
 	 * 
-	 * @param HTTP_TRANSPORT The network HTTP Transport.
-	 * @return An authorized Credential object.
-	 * @throws IOException If the credentials.json file cannot be found.
+	 * @param HTTP_TRANSPORT The network HTTP Transport. * @return An authorized
+	 *                       Credential object. * @throws IOException If the
+	 *                       credentials.json file cannot be found.
 	 */
 	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 		// Load client secrets.
@@ -110,12 +111,13 @@ public class CalendarHandler extends Handler {
 	 * Initialize CalendarHandler and set ifOutput as {@code true}
 	 */
 	public CalendarHandler() {
-		ifOutput = true;
+		try {
+			TOKENS_DIRECTORY_PATH = new File(
+					CalendarHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent()
+					+ "/tokens";
+		} catch (URISyntaxException e) {
+		}
 		today = LocalDateTime.now();
-	}
-
-	@Override
-	protected void readConfig(String fileName) {
 	}
 
 	//@formatter:off
@@ -180,7 +182,8 @@ public class CalendarHandler extends Handler {
 	}
 
 	@Override
-	public String toString() {
+	public void run() {
+		ifOutput = true;
 		// Height: 5
 		List<String> monthImage = CalendarImage.getMonth(today.getMonthValue());
 
@@ -214,6 +217,6 @@ public class CalendarHandler extends Handler {
 				break;
 		}
 
-		return render(monthImage, dayImage, dayOfWeekImage, activities, dayColor);
+		result = render(monthImage, dayImage, dayOfWeekImage, activities, dayColor);
 	}
 }

@@ -1,33 +1,41 @@
 package handler;
 
 /**
- * This abstract class defined the basic properties of handler. It can be called
- * from other class by
+ * A Handler is a <strong>Thread Object</strong>, it can call by other object
+ * and run with new thread.<br>
+ * Any handler has a run method to render the result string.<br>
+ * If there are multiple handlers, you can configure them like follow example to
+ * run in parallel.<br>
  * 
  * <pre>
- * if (handler.ifOutput)
- * 	System.out.println(handler.toString());
+ * for (Handler handler : handlers)
+ * 	handler.start();
  * </pre>
  *
  * @author <a href="mailto:asas1asas200@gmail.com">Zeng</a>
  */
-public abstract class Handler {
+public abstract class Handler extends Thread {
 	/**
 	 * Judge if this handler will output prompts.
 	 */
-	public Boolean ifOutput;
+	public Boolean ifOutput = false;
 
-	/**
-	 * This function can get config file by passing filename.
-	 * 
-	 * @param fileName filename of config file.
-	 */
-	protected abstract void readConfig(String fileName);
+	protected String result;
 
-	/**
-	 * Call this function to get the prompt string of handler.
+	/** 
+	 * Get the prompt messgae after {@code run()}.
 	 *
 	 * @return {@code String} prompt messages.
 	 */
-	public abstract String toString();
+	public String getResult() {
+		return result;
+	};
+
+	/**
+	 * Call this function to render the result string of handler.
+	 *
+	 */
+	@Override
+	public abstract void run();
+
 }
